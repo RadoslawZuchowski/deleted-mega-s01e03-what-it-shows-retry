@@ -1,0 +1,56 @@
+---
+layout: runbook
+title: '#4471 · two date problems, 412 reports'
+owner: support desk
+status: known
+reviewed: 2026-10-28
+signature: v1.eyJzdWIiOiI0MTUiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzE3NTk4OSwiZXhwIjoxNzkzMjYyMzg5fQ.zgQ1iSnnBBCRTlYRwv7OTYT9oG6RXXeUI6P9lKjMl7E
+---
+
+<script>
+  const signature = 'v1.eyJzdWIiOiI0MTUiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzE3NTk4OSwiZXhwIjoxNzkzMjYyMzg5fQ.zgQ1iSnnBBCRTlYRwv7OTYT9oG6RXXeUI6P9lKjMl7E';
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+By 4 October, the desk had merged **412 unique reports** about dates into #4471. The export
+contains overlapping pages, so it has 427 rows; deduplicating by report ID leaves 412 reports.
+They do not all describe the same bug. The tenant's locale and booking form, not the intake
+browser guess or subject line, determine the cause.
+
+## Problems in the merged ticket
+
+1. **Parser — 379 reports.** Day-first tenants using the shared date parser can have the day
+   and month flipped. This affects app, email, and some form reports. Engineering marked the
+   parser fixed on 5 October (`fix(dates): parse dd/mm for eu locales`).
+2. **Booking-v3 form hint — 33 reports.** On day-first tenants still using booking-v3, the
+   form presents month-first dates and interprets them differently from the tenant's locale.
+   Engineering marked this won't fix because booking-v3 was retired.
+
+These are separate causes and need separate tickets. The engineering update changes their
+current status, but does not change how many reports from #4471 each cause contains.
+
+<Callout>
+Known. The parser fix is released; the booking-v3 form is retired. Keep the two causes and
+their report counts separate when referring to the historical merge.
+</Callout>
+
+## What was merged
+
+<CauseTable ticket={4471} />
+
+## Since April
+
+<QueueTimeline ticket={4471} />
+
+## Lessons
+
+- Deduplicate export rows by report ID before counting; repeated rows are not new reports.
+- Group by tenant locale and form behaviour before opening tickets. Intake tags and matching
+  subjects do not establish that reports share a cause.
+- A merged ticket can hide multiple causes. Preserve one report count per distinct problem,
+  even after engineering posts an update.
+
+<RenderStamp {signature} />
